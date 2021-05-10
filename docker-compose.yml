@@ -1,0 +1,42 @@
+version: '3'
+
+networks:
+  database:
+
+volumes:
+  panel:
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db_panel
+    ports:
+      - 5000:5000
+
+  db_panel:
+    image: dpage/pgadmin4
+    depends_on:
+      - db
+    networks:
+      - database
+    ports:
+      - 8080:80
+    volumes:
+      - panel:/var/lib/pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=adelkhalitov1@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=Qwerty12345
+
+  db:
+    image: postgres:alpine
+    networks:
+      - database
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=web
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_DB=web
